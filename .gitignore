@@ -1,0 +1,124 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package mail;
+
+import java.io.*;
+
+/**
+ *
+ * @author thorstenl
+ */
+import java.io.IOException;
+import javax.activation.*;
+import javax.mail.*;
+import javax.mail.internet.*;
+
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+/**
+ * Assumes UTF-8 encoding. JDK 7+.
+ */
+public class Manager {
+
+    public static void main(String... aArgs) throws IOException {
+        /*      Mail mail = new Mail();
+         mail.readFile(C:\opus\Mail\Sample.html);
+         Scanner sc = new Scanner(system.in);
+         // datei einlesen.
+         // mail erstellen
+         // mail befüllen
+         // mail versenden
+         //C:\opus\Mail\Sample.html */
+
+        Manager manager = new Manager();
+        String htmlContent = manager.readFile("C:\\opus\\Mail\\Sample.html");
+
+        System.out.println(htmlContent);
+
+        manager.sendMail(htmlContent);
+    }
+
+    public String readFile(String filePath) {
+
+        String output = "";
+
+        System.out.println("File einlesen.");
+        try {
+            FileReader fr = new FileReader(filePath);
+            BufferedReader br = new BufferedReader(fr);
+
+            String zeile = "null"; /*Wir instanzieren eine Neue Variable, mit dem Namen "zeile", von der klasse "String" (KLassen werden immer groß geschrieben, variablen immer klein). */
+
+            int i = 0;
+            while ((zeile = br.readLine()) != null) {
+                i++;
+                System.out.println("Zeile: " + i + ", Inhalt: " + zeile);
+                output += zeile;
+            }
+            br.close();
+            fr.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return output;
+    }
+
+    /**
+     *
+     * @param text
+     */
+    public void sendMail(String text) {
+
+        System.out.println(text);
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getDefaultInstance(props, null);
+        String to = "thorsten.leube@energieweit.com";
+        String from = "jdewtest@gmail.com";
+        String subject = "Testing...";
+        String password = "Init2015!";
+        Message msg = new MimeMessage(session);
+        try {
+            
+            
+            
+            msg.setFrom(new InternetAddress(from));
+            msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            msg.setSubject(subject);
+            
+            
+            
+            System.out.println("Sending mail");
+            msg.setText(text);
+            Transport.send(msg, from, password);
+            System.out.println("Mail sent");
+        } catch (MessagingException mex) {
+            System.out.println("send failed, exception: " + mex);
+        }
+    }
+
+    /*    public void createMail() {
+
+     }
+
+     public void sendMail() {
+
+     }
+     */
+}
